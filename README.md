@@ -39,9 +39,9 @@ App: bff_main
   No rollback needed (branches have same migrations)
 
 Commands to run:
-╭──────────────────────────────────────────────────────────╮
+╭───────────────────────────────────────────────────────────────╮
 │ python manage.py migrate organization 0003_existing_migration │
-╰──────────────────────────────────────────────────────────╯
+╰───────────────────────────────────────────────────────────────╯
 
 Commands copied to clipboard!
 
