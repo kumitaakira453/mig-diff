@@ -50,10 +50,8 @@ Run these commands? [y/N]:
 
 ## 設定ファイル
 
-mig-treeと同じ設定ファイルを使用：
-
-- `.mig-tree.yaml`（リポジトリ固有）
-- `~/.config/mig-tree/config.yaml`（グローバル）
+- `.mig-diff.yaml`（リポジトリ固有）
+- `~/.config/mig-diff/config.yaml`（グローバル）
 
 ### 設定例
 

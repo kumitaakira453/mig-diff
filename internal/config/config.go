@@ -25,10 +25,10 @@ func DefaultConfig() *Config {
 }
 
 // configFileName is the name of the repository-specific config file.
-const configFileName = ".mig-tree.yaml"
+const configFileName = ".mig-diff.yaml"
 
 // globalConfigDir is the directory name for global config.
-const globalConfigDir = "mig-tree"
+const globalConfigDir = "mig-diff"
 
 // globalConfigFile is the name of the global config file.
 const globalConfigFile = "config.yaml"
@@ -48,8 +48,8 @@ func getGlobalConfigPath() (string, error) {
 }
 
 // Load loads configuration with the following priority (highest to lowest):
-// 1. Repository-specific .mig-tree.yaml
-// 2. Global ~/.config/mig-tree/config.yaml
+// 1. Repository-specific .mig-diff.yaml
+// 2. Global ~/.config/mig-diff/config.yaml
 // 3. Built-in defaults
 func Load() (*Config, error) {
 	cfg := DefaultConfig()
