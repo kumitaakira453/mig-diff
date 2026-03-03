@@ -13,7 +13,10 @@ go install github.com/kumitaakira453/mig-diff@latest
 ## 使い方
 
 ```bash
-# targetブランチとの差分を表示
+# インタラクティブにブランチを選択
+mig-diff
+
+# targetブランチを直接指定
 mig-diff <target-branch>
 
 # 例: mainブランチとの差分
@@ -22,6 +25,8 @@ mig-diff main
 # ヘルプ
 mig-diff --help
 ```
+
+引数なしで実行すると、ローカルブランチの一覧から選択できます（検索対応）。
 
 ## 出力例
 
