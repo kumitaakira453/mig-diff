@@ -78,9 +78,10 @@ func SelectBranch() (string, error) {
 
 // getBranchesWithInfo returns branches with commit information.
 func getBranchesWithInfo() ([]BranchInfo, error) {
+	// Use git for-each-ref for more reliable output
 	// Format: refname:short|authorname|commithash|subject|committerdate:unix
-	format := "%(refname:short)|%(authorname)|%(objectname:short)|%(subject)|%(committerdate:unix)"
-	cmd := exec.Command("git", "branch", "--format="+format)
+	format := "%(refname:short)\t%(authorname)\t%(objectname:short)\t%(subject)\t%(committerdate:unix)"
+	cmd := exec.Command("git", "for-each-ref", "--format="+format, "refs/heads/")
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
@@ -95,7 +96,7 @@ func getBranchesWithInfo() ([]BranchInfo, error) {
 			continue
 		}
 
-		parts := strings.SplitN(line, "|", 5)
+		parts := strings.Split(line, "\t")
 		if len(parts) < 5 {
 			continue
 		}
