@@ -19,7 +19,7 @@ type Config struct {
 // DefaultConfig returns the default configuration.
 func DefaultConfig() *Config {
 	return &Config{
-		Apps:       []string{"organization", "bff_main", "shared"},
+		Apps:       []string{},
 		MigrateCmd: "python manage.py migrate",
 	}
 }
