@@ -12,12 +12,13 @@ import (
 
 // BranchInfo holds branch information with commit details.
 type BranchInfo struct {
-	Name          string
-	Author        string
-	CommitHash    string
-	CommitMessage string
-	CommitDate    time.Time
-	RelativeTime  string
+	Name               string
+	Author             string
+	CommitHash         string
+	CommitMessage      string // Full commit message for Details
+	CommitMessageShort string // Truncated for list display
+	CommitDate         time.Time
+	RelativeTime       string
 }
 
 // SelectBranch shows an interactive branch selector and returns the selected branch.
@@ -48,8 +49,8 @@ func SelectBranch() (string, error) {
 
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}",
-		Active:   "▶ {{ .Name | cyan }}  {{ .RelativeTime | faint }}  {{ .Author | yellow }} • {{ .CommitHash | green }}",
-		Inactive: "  {{ .Name | cyan }}  {{ .RelativeTime | faint }}  {{ .Author | yellow }} • {{ .CommitHash | green }}",
+		Active:   "▶ {{ .Name | cyan }}  {{ .RelativeTime | faint }}  {{ .Author | yellow }} • {{ .CommitHash | green }} • {{ .CommitMessageShort | faint }}",
+		Inactive: "  {{ .Name | cyan }}  {{ .RelativeTime | faint }}  {{ .Author | yellow }} • {{ .CommitHash | green }} • {{ .CommitMessageShort | faint }}",
 		Selected: "✔ {{ .Name | cyan }}",
 		Details: `
 --------- Details ----------
@@ -120,11 +121,8 @@ func getBranchesWithInfo() ([]BranchInfo, error) {
 			branch.CommitHash = parts[2]
 		}
 		if len(parts) > 3 {
-			commitMsg := parts[3]
-			if len(commitMsg) > 50 {
-				commitMsg = commitMsg[:47] + "..."
-			}
-			branch.CommitMessage = commitMsg
+			branch.CommitMessage = parts[3]
+			branch.CommitMessageShort = truncateString(parts[3], 40)
 		}
 		if len(parts) > 4 {
 			var unixTime int64
@@ -149,6 +147,16 @@ func getCurrentBranch() (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(string(output)), nil
+}
+
+// truncateString truncates a string to maxLen runes, adding "..." if truncated.
+// Uses runes to properly handle multi-byte characters (e.g., Japanese).
+func truncateString(s string, maxLen int) string {
+	runes := []rune(s)
+	if len(runes) <= maxLen {
+		return s
+	}
+	return string(runes[:maxLen-3]) + "..."
 }
 
 // formatRelativeTime formats a time as a relative time string.
