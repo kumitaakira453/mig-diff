@@ -48,16 +48,23 @@ func SelectBranch() (string, error) {
 
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}",
-		Active:   "▶ {{ .Name | cyan }}  {{ .RelativeTime | faint }}\n  {{ .Author | yellow }} • {{ .CommitHash | green }} • {{ .CommitMessage | faint }}",
-		Inactive: "  {{ .Name | cyan }}  {{ .RelativeTime | faint }}\n  {{ .Author | yellow }} • {{ .CommitHash | green }} • {{ .CommitMessage | faint }}",
+		Active:   "▶ {{ .Name | cyan }}  {{ .RelativeTime | faint }}  {{ .Author | yellow }} • {{ .CommitHash | green }}",
+		Inactive: "  {{ .Name | cyan }}  {{ .RelativeTime | faint }}  {{ .Author | yellow }} • {{ .CommitHash | green }}",
 		Selected: "✔ {{ .Name | cyan }}",
+		Details: `
+--------- Details ----------
+{{ "Branch:" | faint }}	{{ .Name }}
+{{ "Author:" | faint }}	{{ .Author }}
+{{ "Commit:" | faint }}	{{ .CommitHash }}
+{{ "Message:" | faint }}	{{ .CommitMessage }}
+{{ "Time:" | faint }}	{{ .RelativeTime }}`,
 	}
 
 	prompt := promptui.Select{
 		Label:     "Select target branch",
 		Items:     filteredBranches,
 		Templates: templates,
-		Size:      10,
+		Size:      15,
 		Searcher: func(input string, index int) bool {
 			branch := filteredBranches[index]
 			input = strings.ToLower(input)
@@ -97,31 +104,35 @@ func getBranchesWithInfo() ([]BranchInfo, error) {
 			continue
 		}
 
-		parts := strings.Split(line, "\t")
-		if len(parts) < 5 {
+		parts := strings.SplitN(line, "\t", 5)
+		if len(parts) < 1 || parts[0] == "" {
 			continue
 		}
 
-		var commitDate time.Time
-		var unixTime int64
-		fmt.Sscanf(parts[4], "%d", &unixTime)
-		if unixTime > 0 {
-			commitDate = time.Unix(unixTime, 0)
-		}
-
-		// Truncate commit message if too long
-		commitMsg := parts[3]
-		if len(commitMsg) > 50 {
-			commitMsg = commitMsg[:47] + "..."
-		}
-
 		branch := BranchInfo{
-			Name:          parts[0],
-			Author:        parts[1],
-			CommitHash:    parts[2],
-			CommitMessage: commitMsg,
-			CommitDate:    commitDate,
-			RelativeTime:  formatRelativeTime(commitDate),
+			Name: parts[0],
+		}
+
+		if len(parts) > 1 {
+			branch.Author = parts[1]
+		}
+		if len(parts) > 2 {
+			branch.CommitHash = parts[2]
+		}
+		if len(parts) > 3 {
+			commitMsg := parts[3]
+			if len(commitMsg) > 50 {
+				commitMsg = commitMsg[:47] + "..."
+			}
+			branch.CommitMessage = commitMsg
+		}
+		if len(parts) > 4 {
+			var unixTime int64
+			fmt.Sscanf(parts[4], "%d", &unixTime)
+			if unixTime > 0 {
+				branch.CommitDate = time.Unix(unixTime, 0)
+				branch.RelativeTime = formatRelativeTime(branch.CommitDate)
+			}
 		}
 
 		branches = append(branches, branch)
