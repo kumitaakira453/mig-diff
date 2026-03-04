@@ -44,10 +44,6 @@ type Result struct {
 // Run compares migrations between the current branch and a target branch
 // for all configured apps and prints the results.
 func Run(cfg *config.Config, targetBranch string) error {
-	if len(cfg.Apps) == 0 {
-		return fmt.Errorf("no apps configured. Please create .mig-diff.yaml with 'apps' list")
-	}
-
 	currentBranch, err := git.GetCurrentBranch()
 	if err != nil {
 		return fmt.Errorf("failed to get current branch: %w", err)

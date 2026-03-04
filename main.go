@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/kumitaakira453/mig-diff/internal/config"
 	"github.com/kumitaakira453/mig-diff/internal/diff"
@@ -10,9 +11,26 @@ import (
 )
 
 func main() {
+	// --help is allowed outside a git repo
+	if len(os.Args) >= 2 && (os.Args[1] == "--help" || os.Args[1] == "-h") {
+		printHelp()
+		return
+	}
+
+	if err := exec.Command("git", "rev-parse", "--is-inside-work-tree").Run(); err != nil {
+		fmt.Fprintln(os.Stderr, "Error: not a git repository. Run mig-diff inside a git repository.")
+		os.Exit(1)
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading config: %v\n", err)
+		os.Exit(1)
+	}
+
+	if len(cfg.Apps) == 0 {
+		fmt.Fprintln(os.Stderr, "Error: no apps configured.")
+		fmt.Fprintln(os.Stderr, "Create .mig-diff.yaml or ~/.config/mig-diff/config.yaml with 'apps' list.")
 		os.Exit(1)
 	}
 
@@ -31,13 +49,7 @@ func main() {
 		}
 		targetBranch = branch
 	} else {
-		switch os.Args[1] {
-		case "--help", "-h":
-			printHelp()
-			return
-		default:
-			targetBranch = os.Args[1]
-		}
+		targetBranch = os.Args[1]
 	}
 
 	if err := diff.Run(cfg, targetBranch); err != nil {
