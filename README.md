@@ -2,12 +2,11 @@
 
 Djangoマイグレーションのブランチ間差分を表示し、ロールバックコマンドを生成するCLIツール。
 
-[mig-tree](https://github.com/kumitaakira453/mig-tree)のCLI機能を独立したツールとして提供。
-
 ## インストール
 
 ```bash
-go install github.com/kumitaakira453/mig-diff@latest
+brew tap kumitaakira453/tap
+brew install mig-diff
 ```
 
 ## 使い方

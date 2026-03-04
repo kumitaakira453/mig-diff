@@ -1,0 +1,19 @@
+version: 2
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+brews:
+  - repository:
+      owner: kumitaakira453
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: "https://github.com/kumitaakira453/mig-diff"
+    description: "Show Django migration diffs between git branches"
